@@ -2,6 +2,7 @@ import { User } from '@supabase/supabase-js'
 import type { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../../utils/supabaseClient'
+import Layout from '../../Layout'
 
 const NewQuiz: NextPage = () => {
 
@@ -21,16 +22,13 @@ const NewQuiz: NextPage = () => {
           }
     }
 
-    const signOut  = async () => {
-        await supabase.auth.signOut()
-    }
-
   return (
-    <div >
-        <p>{user?.email}</p>
-        <button onClick={signOut}>Logout</button>
+    <Layout>
+        <div >
+            <p>{user?.email}</p>
+        </div>
+    </Layout>
 
-    </div>
   )
 }
 
