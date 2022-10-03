@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { supabase } from '../utils/supabaseClient'
 import { Session } from '@supabase/supabase-js'
-import { useRouter } from "next/router"
+import { useRouter } from 'next/router'
 
 export default function Component(props: any) {
   const [session, setSession] = useState<Session | null>(null)
@@ -17,12 +17,20 @@ export default function Component(props: any) {
 }
 
 useEffect(() => {
+  if(session) {
+    router.push('/quiz/new')
+  }
+
+}, [session])
+
+useEffect(() => {
   let mounted = true
 
   async function getInitialSession() {
     const {
       data: { session },
     } = await supabase.auth.getSession()
+    console.log("session = ", session)
 
     // only update the react state if the component is still mounted
     if (mounted) {
@@ -38,8 +46,6 @@ useEffect(() => {
 
   const { data: { subscription } } = supabase.auth.onAuthStateChange(
     (_event, session) => {
-      console.log("session = ", session)
-
       setSession(session)
     }
   )
@@ -51,17 +57,20 @@ useEffect(() => {
   }
 }, [])
 
-useEffect(() => {
+const user = useMemo(() => {
+
   if (session) {
-    router.push('/quiz/new')
-  } else {
-    router.push('/login')
+    return session.user.email
   }
 
+  return ''
 }, [session])
 
   return (
     <div>
+      <div>
+        <p>User: </p><p>{user}</p>
+      </div>
       <div>
         {session &&
           <button

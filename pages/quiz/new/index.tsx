@@ -7,6 +7,7 @@ import Layout from '../../Layout'
 const NewQuiz: NextPage = () => {
 
     const [user, setUser] = useState<User>()
+    const [quizName, setQuizName] = useState('')
 
     useEffect(() => {
         fetchUser()
@@ -22,13 +23,29 @@ const NewQuiz: NextPage = () => {
           }
     }
 
+    const createQuiz = async () => {
+        const { data, error } = await supabase
+            .from('quiz')
+            .insert([
+                { name: quizName }
+            ])
+    }
+
   return (
     <Layout>
-        <div >
-            <p>{user?.email}</p>
+        <div>
+            <div>
+                <p>Create new quiz</p>
+                <form>
+                    <label>Quiz name</label><br></br>
+                    <input type='text' placeholder='Type the name of the quiz' onChange={(event) => setQuizName(event.target?.value)}/><br></br>
+                    <input type="submit" value="Submit" onClick={() => createQuiz()}/>
+                </form>
+                
+            </div>
+            
         </div>
     </Layout>
-
   )
 }
 
