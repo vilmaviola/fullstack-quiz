@@ -29,13 +29,15 @@ const NewQuiz: NextPage = () => {
             .insert([
                 { name: quizName }
             ])
+
+        console.log("insert data", data)
     }
 
   return (
     <Layout>
         <div>
             <div>
-                <p>Create new quiz</p>
+                <p className='text-3xl' >Create new quiz</p>
                 <form>
                     <label>Quiz name</label><br></br>
                     <input type='text' placeholder='Type the name of the quiz' onChange={(event) => setQuizName(event.target?.value)}/><br></br>

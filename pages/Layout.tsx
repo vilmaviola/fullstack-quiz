@@ -69,7 +69,7 @@ const user = useMemo(() => {
   return (
     <div>
       <div>
-        <p>User: </p><p>{user}</p>
+        <p className="text-3xl">User: </p><p>{user}</p>
       </div>
       <div>
         {session &&
