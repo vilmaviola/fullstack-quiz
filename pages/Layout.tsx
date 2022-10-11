@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { supabase } from '../utils/supabaseClient'
 import { Session } from '@supabase/supabase-js'
-import { useRouter } from "next/router"
+import { useRouter} from 'next/router'
 
 export default function Component(props: any) {
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-
-  console.log("session = ", session)
 
   const router = useRouter()
 
@@ -15,6 +13,14 @@ export default function Component(props: any) {
     await supabase.auth.signOut()
     router.push('/login')
 }
+
+useEffect(() => {
+
+  if(session && !router.pathname.includes('/quiz/new/') ) {
+    router.push('/quiz/new')
+  }
+
+}, [session])
 
 useEffect(() => {
   let mounted = true
@@ -38,8 +44,6 @@ useEffect(() => {
 
   const { data: { subscription } } = supabase.auth.onAuthStateChange(
     (_event, session) => {
-      console.log("session = ", session)
-
       setSession(session)
     }
   )
@@ -51,17 +55,20 @@ useEffect(() => {
   }
 }, [])
 
-useEffect(() => {
+const user = useMemo(() => {
+
   if (session) {
-    router.push('/quiz/new')
-  } else {
-    router.push('/login')
+    return session.user.email
   }
 
+  return ''
 }, [session])
 
   return (
     <div>
+      <div>
+        <p className="text-3xl">User: </p><p>{user}</p>
+      </div>
       <div>
         {session &&
           <button
