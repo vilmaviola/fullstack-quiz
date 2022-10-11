@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { supabase } from '../utils/supabaseClient'
 import { Session } from '@supabase/supabase-js'
-import { useRouter } from 'next/router'
+import { useRouter} from 'next/router'
 
 export default function Component(props: any) {
   const [session, setSession] = useState<Session | null>(null)
@@ -15,7 +15,8 @@ export default function Component(props: any) {
 }
 
 useEffect(() => {
-  if(session) {
+
+  if(session && !router.pathname.includes('/quiz/new/') ) {
     router.push('/quiz/new')
   }
 

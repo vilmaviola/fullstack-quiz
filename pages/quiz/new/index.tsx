@@ -38,7 +38,6 @@ const NewQuiz: NextPage = () => {
             if (!error) {
                 router.push(`/quiz/new/${data.id}`)
             }
-
     }
 
   return (
