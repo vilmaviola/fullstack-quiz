@@ -50,7 +50,6 @@ const NewQuiz: NextPage = () => {
                     <input type='text' placeholder='Type the name of the quiz' onChange={(event) => setQuizName(event.target?.value)}/><br></br>
                     <input type="submit" value="Create quiz"/>
                 </form>
-                
             </div>
             
         </div>

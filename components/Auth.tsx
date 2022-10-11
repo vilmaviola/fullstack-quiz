@@ -8,7 +8,7 @@ export default function Auth() {
   const handleLogin = async (email: string) => {
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signInWithOtp({ email })
+      const { error } = await supabase.auth.signInWithOtp({ email, options: {emailRedirectTo: '/new/quiz'}})
       if (error) throw error
       alert('Check your email for the login link!')
     } catch (error: any) {
