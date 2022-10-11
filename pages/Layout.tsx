@@ -7,8 +7,6 @@ export default function Component(props: any) {
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  console.log("session = ", session)
-
   const router = useRouter()
 
   const signOut  = async () => {
@@ -30,7 +28,6 @@ useEffect(() => {
     const {
       data: { session },
     } = await supabase.auth.getSession()
-    console.log("session = ", session)
 
     // only update the react state if the component is still mounted
     if (mounted) {
