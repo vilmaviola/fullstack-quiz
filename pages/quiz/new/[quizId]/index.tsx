@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { ChangeEvent, FormEvent, useState } from 'react'
-import { supabase } from '../../../utils/supabaseClient'
-import Layout from '../../Layout'
+import { supabase } from '../../../../utils/supabaseClient'
+import Layout from '../../../Layout'
 
 type Answer = {
   answer?: string,
@@ -28,10 +28,10 @@ function AddQuestions() {
               quizId: quizId
             }
         ).select().limit(1).single()
-    
-      const bulkOption = options.map((option) => (
-          {...option, questionId: data.id}
-      ))
+  
+    const bulkOption = options.map((option) => (
+        {...option, questionId: data.id}
+    ))
 
     const { data: answers, error: answersError } = await supabase
     .from('answers')
@@ -49,11 +49,11 @@ function AddQuestions() {
 function handleChange(event: ChangeEvent<HTMLInputElement>, index: number) {
   const value = event.target.value
   setOptions((previousArray) => {
-    const update = [...previousArray]
-    const updateOption = update[index]
+    const updateOptionsArray = [...previousArray]
+    const updateOption = updateOptionsArray[index]
 
-    update[index] = {...updateOption, answer: value}
-    return update
+    updateOptionsArray[index] = {...updateOption, answer: value}
+    return updateOptionsArray
   })
 }
 
@@ -74,7 +74,6 @@ function handleChecked(event: ChangeEvent<HTMLInputElement>, index:number) {
         <div>
             <h1>Add questions here!</h1>
             <br></br><br></br>
-
               <form onSubmit={addQuestion} >
                   <label>Question</label><br></br>
                   <input type='text' placeholder='Type the question' value={question} onChange={(event) => setQuestion(event.target?.value)}/><br></br>
@@ -93,6 +92,9 @@ function handleChecked(event: ChangeEvent<HTMLInputElement>, index:number) {
                 <br></br><br></br>
                 <input type="submit" value="Add question"/>
               </form>
+              <div>
+                <button onClick={() => router.push(`/quiz/new/${quizId}/confirm`)}>Okay I'm done...</button>
+              </div>
         </div>
     </Layout>
   )
