@@ -15,14 +15,6 @@ export default function Component(props: any) {
 }
 
 useEffect(() => {
-
-  if(session && !router.pathname.includes('/quiz/new/') ) {
-    router.push('/quiz/new')
-  }
-
-}, [session])
-
-useEffect(() => {
   let mounted = true
 
   async function getInitialSession() {

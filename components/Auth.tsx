@@ -1,14 +1,17 @@
-import { useState } from 'react'
+import { Session } from '@supabase/supabase-js'
+import router from 'next/router'
+import { useEffect, useState } from 'react'
 import { supabase } from '../utils/supabaseClient'
 
 export default function Auth() {
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
+  const [session, setSession] = useState<Session | null>(null)
 
   const handleLogin = async (email: string) => {
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signInWithOtp({ email })
+      const { error } = await supabase.auth.signInWithOtp({ email, options: {emailRedirectTo: '/new/quiz'}})
       if (error) throw error
       alert('Check your email for the login link!')
     } catch (error: any) {
@@ -17,6 +20,46 @@ export default function Auth() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    let mounted = true
+  
+    async function getInitialSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+  
+      // only update the react state if the component is still mounted
+      if (mounted) {
+        if (session) {
+          setSession(session)
+        }
+  
+      }
+    }
+  
+    getInitialSession()
+  
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session)
+      }
+    )
+  
+    return () => {
+      mounted = false
+  
+      subscription?.unsubscribe()
+    }
+  }, [])
+
+  useEffect(() => {
+
+    if(session ) {
+      router.push('/quiz/new')
+    }
+  
+  }, [session])
 
   return (
     <div className="row flex-center flex">
