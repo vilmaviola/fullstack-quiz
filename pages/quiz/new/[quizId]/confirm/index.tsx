@@ -101,6 +101,9 @@ function ConfirmQuiz() {
         {quizId && theQuiz && (
           renderQuiz()
         )}
+        <div>
+          <button onClick={() => navigator.clipboard.writeText(`http://localhost:3000/quiz/start/${quizId}`)}>Click here to copy link to quiz!</button>
+        </div>
     </Layout>
   )
 
