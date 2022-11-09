@@ -3,7 +3,7 @@ import { ChangeEvent, FormEvent, useState } from 'react'
 import { supabase } from '../../../../utils/supabaseClient'
 import Layout from '../../../Layout'
 
-type Answer = {
+export type Answer = {
   answer?: string,
   correct?: boolean,
 }

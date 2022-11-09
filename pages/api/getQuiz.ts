@@ -7,12 +7,21 @@ export default async function handler(
   res: NextApiResponse
 ) {
 
+  const quizId = req?.body?.quizId
+
   const { data, error } = await supabase
-    .from('answers')
-    .select('id, correct')
-    .in('id', req?.body?.answer)
+  .from('questions')
+  .select(`
+  question,
+  id,
+  answers (
+    questionId,
+    answer,
+    id
+  )
+`)
+.eq('quizId', quizId)
 
-    console.log("data = ", data)
-    console.log("error = ", error)
+  res.status(200).json(data)
 
-  res.status(200).json(data)}
+}

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { FormEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../../../utils/supabaseClient'
 import Layout from '../../Layout'
 
@@ -8,9 +8,10 @@ function StartQuiz() {
   const router = useRouter()
   const { quizId } = router.query
 
-  const [theQuestion, setTheQuestion] = useState(null)
+  const [theQuestion, setTheQuestion] = useState<({ question: any; } & { id: number; } & { answers: ({ answer: any; } & { id: any; } & { questionId: any;})[]; })[]>()
   const [error, setError] = useState<string>()
   const [userAnswer, setUserAnswer] = useState<string[]>([])
+
 
   useEffect(() => {
 
@@ -31,7 +32,7 @@ function StartQuiz() {
 
       if (error) {
         setError('Could not fetch quiz')
-        setTheQuestion(null)
+        setTheQuestion([])
       }
       if (data) {
         setTheQuestion(data)
@@ -40,21 +41,58 @@ function StartQuiz() {
       }
     }
 
+/*     async function getQuiz() {
+      if (quizId) {
+        fetch('/api/getQuiz', {
+          body: JSON.stringify ({
+            quizId: quizId
+          }),
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+        })
+        .then((response) => {
+          console.log("response = ", response)
+    
+          return response.json();
+       })
+       .then((data) => {
+           console.log("data = ", data)
+       })
+       .catch((error) => console.error(error));
+    
+      }
+  } */
+
     getQuiz()
   }, [quizId])
 
 
-  const answerQuiz = async (event) => {
+  const answerQuiz = async (event: any) => {
     event.preventDefault()
-
-    console.log("userAnswer = ",userAnswer)
+    console.log("userAnswer = ", userAnswer)
 
     fetch('/api/validateAnswer', {
       body: JSON.stringify ({
         answer: userAnswer
       }),
-      method: 'POST'
-    })
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+    }) 
+    .then((response) => {
+      console.log("response = ", response)
+
+      return response.json();
+   })
+   .then((data) => {
+       console.log("data = ", data)
+   })
+   .catch((error) => console.error(error));
 
 }
 
@@ -62,7 +100,7 @@ function StartQuiz() {
     return (
       <div>
         <form onSubmit={answerQuiz}>
-        {theQuestion?.map((question) => (
+        { theQuestion && theQuestion?.map((question) => (
         <div key={question.question}>
           <h2><strong>Question:</strong></h2>
           <p>{question.question}</p>
