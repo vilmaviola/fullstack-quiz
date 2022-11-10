@@ -1,70 +1,46 @@
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { supabase } from '../../../../../utils/supabaseClient'
 import Layout from '../../../../Layout'
-
-/* type Question = {
-  question: string,
-  id: number,
-  answers: Answer[],
-}
-
-type Answer = {
-  correct: boolean,
-  answer: string,
-  questionId: number,
-}
-
-type QuizQuestion = ({
-  question: any;
-  } & {
-      id: any;
-  } & {
-      answers: unknown;
-  })[] | undefined */
 
 function ConfirmQuiz() {
 
     const router = useRouter()
     const { quizId } = router.query
 
-    const [theQuiz, setTheQuiz] = useState(null)
+    const [theQuiz, setTheQuiz] = useState<({ question: any; } & { id: number; } & { answers: ({ answer: any; } & { id: any; } & { questionId: any;} & { correct: any; })[]; })[]>()
     const [error, setError] = useState<string>()
 
     useEffect(() => {
       async function getQuiz() {
         if (quizId) {
-          const { data, error } = await supabase
-          .from('questions')
-          .select(`
-          question,
-          id,
-          answers (
-            questionId,
-            answer,
-            correct
-          )
-        `)
-        .eq('quizId', quizId)
-  
-        if (error) {
-          setError('Could not fetch quiz')
-          setTheQuiz(null)
+          fetch('/api/getQuiz', {
+            body: JSON.stringify ({
+              quizId: quizId
+            }),
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+          })
+          .then((response) => {      
+            return response.json();
+         })
+         .then((data) => {
+            setTheQuiz(data)
+            setError(undefined)
+         })
+         .catch((error) => {
+            setError('Could not fetch quiz')
+            setTheQuiz([])
+        });
+      
         }
-        if (data) {
-          setTheQuiz(data)
-          setError(undefined)
-        }
-        //console.log("quizData = ", data)
-        }
-      }
+    }
 
       getQuiz()
     }, [])
 
-/*     useEffect(() => {
-      console.log("theQuiz = ", theQuiz)
-    }, [theQuiz]) */
 
     const renderQuiz = () => {
       return (

@@ -17,7 +17,8 @@ export default async function handler(
   answers (
     questionId,
     answer,
-    id
+    id,
+    correct
   )
 `)
 .eq('quizId', quizId)

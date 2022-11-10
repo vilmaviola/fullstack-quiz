@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { supabase } from '../../../utils/supabaseClient'
 import Layout from '../../Layout'
 
 function StartQuiz() {
@@ -8,40 +7,13 @@ function StartQuiz() {
   const router = useRouter()
   const { quizId } = router.query
 
-  const [theQuestion, setTheQuestion] = useState<({ question: any; } & { id: number; } & { answers: ({ answer: any; } & { id: any; } & { questionId: any;})[]; })[]>()
+  const [theQuestion, setTheQuestion] = useState<({ question: any; } & { id: number; } & { answers: ({ answer: any; } & { id: any; } & { questionId: any;} & { correct: any; })[]; })[]>()
   const [error, setError] = useState<string>()
   const [userAnswer, setUserAnswer] = useState<string[]>([])
 
 
   useEffect(() => {
-
     async function getQuiz() {
-      if (quizId) {
-        const { data, error } = await supabase
-        .from('questions')
-        .select(`
-        question,
-        id,
-        answers (
-          questionId,
-          answer,
-          id
-        )
-      `)
-      .eq('quizId', quizId)
-
-      if (error) {
-        setError('Could not fetch quiz')
-        setTheQuestion([])
-      }
-      if (data) {
-        setTheQuestion(data)
-        setError(undefined)
-      }
-      }
-    }
-
-/*     async function getQuiz() {
       if (quizId) {
         fetch('/api/getQuiz', {
           body: JSON.stringify ({
@@ -53,18 +25,20 @@ function StartQuiz() {
             'Content-Type': 'application/json'
           },
         })
-        .then((response) => {
-          console.log("response = ", response)
-    
+        .then((response) => {    
           return response.json();
        })
        .then((data) => {
-           console.log("data = ", data)
+          setTheQuestion(data)
+          setError(undefined)
        })
-       .catch((error) => console.error(error));
+       .catch((error) => {
+        setError('Could not fetch quiz')
+        setTheQuestion([])
+      });
     
       }
-  } */
+  }
 
     getQuiz()
   }, [quizId])
@@ -99,6 +73,7 @@ function StartQuiz() {
   const renderQuiz = () => {
     return (
       <div>
+        {error && error}
         <form onSubmit={answerQuiz}>
         { theQuestion && theQuestion?.map((question) => (
         <div key={question.question}>
