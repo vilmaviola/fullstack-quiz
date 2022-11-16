@@ -9,10 +9,7 @@ export default async function handler(
 
   const { data, error } = await supabase
     .from('answers')
-    .select('id, correct')
+    .select('id, correct, answer')
     .in('id', req?.body?.answer)
-
-    console.log("data = ", data)
-    console.log("error = ", error)
-
+    
   res.status(200).json(data)}

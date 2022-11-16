@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Layout from '../../Layout'
 
 function StartQuiz() {
@@ -10,7 +10,7 @@ function StartQuiz() {
   const [theQuestion, setTheQuestion] = useState<({ question: any; } & { id: number; } & { answers: ({ answer: any; } & { id: any; } & { questionId: any;} & { correct: any; })[]; })[]>()
   const [error, setError] = useState<string>()
   const [userAnswer, setUserAnswer] = useState<string[]>([])
-
+  const [validatedAnswer, setValidatedAnswer] = useState<({ answer: any; } & { id: any; } & { correct: any; })[]>()
 
   useEffect(() => {
     async function getQuiz() {
@@ -33,7 +33,7 @@ function StartQuiz() {
           setError(undefined)
        })
        .catch((error) => {
-        setError('Could not fetch quiz')
+        setError(error)
         setTheQuestion([])
       });
     
@@ -46,7 +46,6 @@ function StartQuiz() {
 
   const answerQuiz = async (event: any) => {
     event.preventDefault()
-    console.log("userAnswer = ", userAnswer)
 
     fetch('/api/validateAnswer', {
       body: JSON.stringify ({
@@ -59,16 +58,21 @@ function StartQuiz() {
       },
     }) 
     .then((response) => {
-      console.log("response = ", response)
-
       return response.json();
    })
    .then((data) => {
-       console.log("data = ", data)
+       setValidatedAnswer(data)
    })
-   .catch((error) => console.error(error));
+   .catch((error) => {
+    console.error(error)
+    setError(error)
+  });
 
 }
+/* console.log("validatedAnswer = ", validatedAnswer)
+validatedAnswer.map((answer) => {
+  console.log("answer = ", answer)
+}) */
 
   const renderQuiz = () => {
     return (
@@ -107,12 +111,47 @@ function StartQuiz() {
     )
   }
 
+  const renderValidatedAnswers = () => {
+    return (
+      <>
+      <p>HEJ</p>
+        {error && error}
+        {validatedAnswer && validatedAnswer?.map((answer: ({ answer: any; } & { id: any; } & { correct: any; })) => {
+          <div key={answer.answer}>
+            <br></br>
+            <p>{answer.answer}</p>
+            <br></br>
+            <p>{answer.correct}</p>
+            <br></br>
+          </div>
+        })}
+    </>
+    )
+  }
+
+  const countCorrectAnswers = useMemo(() => {
+    const listOfCorrect = validatedAnswer?.map((answer) => answer.correct).flat()
+    const countTrue = listOfCorrect?.filter((correct: boolean) => correct === true).length
+    return countTrue
+  }, [validatedAnswer])
+
   return (
     <Layout>
         <div>
             This is the start quiz page!!
         </div>
-        <div>{renderQuiz()}</div>
+        <div>
+          {validatedAnswer ? (
+            <div>
+              {renderValidatedAnswers()}
+              Number of correct answers: {countCorrectAnswers}
+            </div>
+          ) : (
+            <>
+              {renderQuiz()}
+            </>
+          )}
+        </div>
 
     </Layout>
   )
